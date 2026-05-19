@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O SOM DA INFORMAÇÃO</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #FAF5FF;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        header {
+            background-color: #7C3AED;
+            color: white;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .balao-som {
+            background-color: #F3E8FF;
+            border: 4px dashed #A78BFA;
+            color: #4C1D95;
+            padding: 20px;
+            font-size: 36px;
+            font-weight: 900;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+        .opcoes-grade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .btn-resposta {
+            background-color: #F3F4F6;
+            border: 3px solid #D1D5DB;
+            border-radius: 16px;
+            padding: 20px;
+            font-size: 70px;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 6px 0 #9CA3AF;
+        }
+        .btn-resposta:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+        .tela-final {
+            background-color: #F3E8FF;
+            border: 5px dashed #7C3AED;
+            padding: 35px;
+            border-radius: 16px;
+        }
+        .nota-box {
+            font-size: 64px;
+            font-weight: 900;
+            color: #7C3AED;
+            margin: 20px 0;
+            background: #FFF;
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .tela-final button {
+            background-color: #7C3AED;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 style="font-size: 20px;">👂 LEIA O SOM DA INFORMAÇÃO 👂</h1>
+    </header>
+
+    <div class="container" id="jogo-box">
+        <p style="font-size: 20px; font-weight: bold; color: #4C1D95; margin-bottom: 15px;">QUE COISA OU ANIMAL FAZ ESTE BARULHO?</p>
+        
+        <div class="balao-som" id="texto-som">CRIANDO SOM...</div>
+        
+        <div class="opcoes-grade" id="grade"></div>
+    </div>
+
+    <footer>
+        Material Pedagógico – Profª Adriana Bett Terebinto © 2026
+    </footer>
+
+    <script>
+        // Novos elementos focados na rotina e ambiente da criança
+        const fases = [
+            { escuto: "AU! AU! AU!", opcoes: ["🐱", "🐶"], correta: 1 },
+            { escuto: "FON-FON!", opcoes: ["🚗", "🚲"], correta: 0 },
+            { escuto: "CABRUM!", opcoes: ["⛈️", "☀️"], correta: 0 },
+            { escuto: "PIU! PIU!", opcoes: ["🦁", "🐤"], correta: 1 },
+            { escuto: "TRIIIM!", opcoes: ["⏰", "🔋"], correta: 0 }
+        ];
+
+        let atual = 0;
+        let acertos = 0;
+
+        function carregarFase() {
+            if (atual >= fases.length) {
+                mostrarFim();
+                return;
+            }
+
+            const dados = fases[atual];
+            
+            document.getElementById('texto-som').innerText = dados.escuto;
+            
+            const grade = document.getElementById('grade');
+            grade.innerHTML = '';
+
+            dados.opcoes.forEach((emoji, index) => {
+                const b = document.createElement('button');
+                b.className = 'btn-resposta';
+                b.innerText = emoji;
+                b.onclick = () => {
+                    if (index === dados.correta) acertos++;
+                    atual++;
+                    carregarFase();
+                };
+                grade.appendChild(b);
+            });
+        }
+
+        function mostrarFim() {
+            const nota = (acertos / fases.length) * 10;
+            document.getElementById('jogo-box').innerHTML = `
+                <div class="tela-final">
+                    <p style="font-size: 24px; font-weight: bold; color: #6D28D9;">MUITO BEM!</p>
+                    <p style="font-size: 18px; color: #4B5563; margin-top: 10px;">SUA NOTA FOI:</p>
+                    <div class="nota-box">${nota.toFixed(0)}</div>
+                    <p style="font-size: 18px; font-weight: bold;">VOCÊ CONSEGUE DECIFRAR TODOS OS SONS!</p>
+                    <button onclick="window.location.reload()">JOGAR DE NOVO</button>
+                </div>
+            `;
+        }
+
+        carregarFase();
+    </script>
+</body>
+</html>
