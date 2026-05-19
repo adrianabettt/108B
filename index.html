@@ -39,6 +39,13 @@
             flex-direction: column;
             justify-content: center;
         }
+        .placar-progresso {
+            font-size: 16px;
+            font-weight: bold;
+            color: #6B28D9;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
         .balao-som {
             background-color: #F3E8FF;
             border: 4px dashed #A78BFA;
@@ -117,6 +124,7 @@
     </header>
 
     <div class="container" id="jogo-box">
+        <div class="placar-progresso" id="progresso">FASE 1 DE 5</div>
         <p style="font-size: 20px; font-weight: bold; color: #4C1D95; margin-bottom: 15px;">QUE COISA OU ANIMAL FAZ ESTE BARULHO?</p>
         
         <div class="balao-som" id="texto-som">CRIANDO SOM...</div>
@@ -129,26 +137,45 @@
     </footer>
 
     <script>
-        // Novos elementos focados na rotina e ambiente da criança
-        const fases = [
+        // Banco total com 10 itens pedagógicos
+        const bancoDeDesafios = [
             { escuto: "AU! AU! AU!", opcoes: ["🐱", "🐶"], correta: 1 },
             { escuto: "FON-FON!", opcoes: ["🚗", "🚲"], correta: 0 },
             { escuto: "CABRUM!", opcoes: ["⛈️", "☀️"], correta: 0 },
             { escuto: "PIU! PIU!", opcoes: ["🦁", "🐤"], correta: 1 },
-            { escuto: "TRIIIM!", opcoes: ["⏰", "🔋"], correta: 0 }
+            { escuto: "TRIIIM!", opcoes: ["⏰", "🔋"], correta: 0 },
+            { escuto: "MUUU!", opcoes: ["🐖", "🐄"], correta: 1 },
+            { escuto: "TICTAC TICTAC", opcoes: ["⌚", "📻"], correta: 0 },
+            { escuto: "ATCHIM!", opcoes: ["🤧", "😴"], correta: 0 },
+            { escuto: "GLU GLU!", opcoes: ["🦃", "🐟"], correta: 0 },
+            { escuto: "CHÁCHÁCHÁ!", opcoes: ["🚂", "✈️"], correta: 0 }
         ];
 
+        let fasesSorteadas = [];
         let atual = 0;
         let acertos = 0;
 
+        // Função para sortear e embaralhar os itens do jogo
+        function iniciarJogo() {
+            // Embaralha o banco completo de 10 itens
+            const bancoEmbaralhado = [...bancoDeDesafios].sort(() => Math.random() - 0.5);
+            
+            // Pega apenas os 5 primeiros itens sorteados
+            fasesSorteadas = bancoEmbaralhado.slice(0, 5);
+            
+            carregarFase();
+        }
+
         function carregarFase() {
-            if (atual >= fases.length) {
+            if (atual >= fasesSorteadas.length) {
                 mostrarFim();
                 return;
             }
 
-            const dados = fases[atual];
-            
+            // Atualiza o indicador de fases (Ex: FASE 1 DE 5)
+            document.getElementById('progresso').innerText = `FASE ${atual + 1} DE ${fasesSorteadas.length}`;
+
+            const dados = fasesSorteadas[atual];
             document.getElementById('texto-som').innerText = dados.escuto;
             
             const grade = document.getElementById('grade');
@@ -168,7 +195,10 @@
         }
 
         function mostrarFim() {
-            const nota = (acertos / fases.length) * 10;
+            const nota = (acertos / fasesSorteadas.length) * 10;
+            // Oculta o progresso no fim do jogo
+            document.getElementById('progresso').style.display = 'none';
+            
             document.getElementById('jogo-box').innerHTML = `
                 <div class="tela-final">
                     <p style="font-size: 24px; font-weight: bold; color: #6D28D9;">MUITO BEM!</p>
@@ -180,7 +210,8 @@
             `;
         }
 
-        carregarFase();
+        // Inicializa o sorteador ao abrir a tela
+        iniciarJogo();
     </script>
 </body>
 </html>
